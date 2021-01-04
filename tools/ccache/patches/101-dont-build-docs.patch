@@ -1,0 +1,11 @@
+--- a/CMakeLists.txt	2020-12-31 12:56:22.040092266 +0000
++++ b/CMakeLists.txt	2020-12-31 12:56:41.411772086 +0000
+@@ -115,7 +115,7 @@ target_link_libraries(ccache PRIVATE sta
+ #
+ # Documentation
+ #
+-add_subdirectory(doc)
++# add_subdirectory(doc)
+
+ #
+ # Installatio
