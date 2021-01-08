@@ -1,14 +1,24 @@
-#include "qcom-ipq8064-ad7200-c2600.dtsi"
+#include "qcom-ipq8064-v2.0.dtsi"
+
+#include <dt-bindings/input/input.h>
 
 / {
 	model = "TP-Link Archer C2600";
 	compatible = "tplink,c2600", "qcom,ipq8064";
 
+	memory@0 {
+		reg = <0x42000000 0x1e000000>;
+		device_type = "memory";
+	};
+
 	aliases {
+		mdio-gpio0 = &mdio0;
+
 		led-boot = &power;
 		led-failsafe = &general;
 		led-running = &power;
 		led-upgrade = &general;
+		label-mac-device = &gmac2;
 	};
 
 	keys {
@@ -390,10 +400,8 @@
 	qcom,socver = <0>;
 	qcom,irq = <255>;
 	mdiobus = <&mdio0>;
-
 	pinctrl-0 = <&rgmii2_pins>;
 	pinctrl-names = "default";
-
 	mtd-mac-address = <&defaultmac 0x8>;
 	mtd-mac-address-increment = <1>;
 
@@ -421,7 +429,6 @@
 	qcom,socver = <0>;
 	qcom,irq = <258>;
 	mdiobus = <&mdio0>;
-
 	mtd-mac-address = <&defaultmac 0x8>;
 
 	fixed-link {
@@ -432,5 +439,4 @@
 
 &adm_dma {
 	status = "okay";
-=======
 };
