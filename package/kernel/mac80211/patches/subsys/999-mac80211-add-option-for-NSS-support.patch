@@ -178,10 +178,10 @@
  	    local->ops->wake_tx_queue) {
 --- a/net/mac80211/rx.c
 +++ b/net/mac80211/rx.c
-@@ -2556,6 +2556,13 @@ static bool ieee80211_frame_allowed(struct ieee80211_rx_data *rx, __le16 fc)
+@@ -2519,6 +2519,13 @@ static bool ieee80211_frame_allowed(stru
  	return true;
  }
- 
+
 +static inline void netif_rx_nss(struct sk_buff *skb, struct ieee80211_sub_if_data *sdata)
 +{
 +	skb_queue_tail(&sdata->rx_queue, skb);
@@ -192,10 +192,10 @@
  static void ieee80211_deliver_skb_to_local_stack(struct sk_buff *skb,
  						 struct ieee80211_rx_data *rx)
  {
-@@ -2574,6 +2574,13 @@ static void ieee80211_deliver_skb_to_local_stack(struct sk_buff *skb,
+@@ -2537,6 +2544,13 @@ static void ieee80211_deliver_skb_to_loc
  	} else {
  		memset(skb->cb, 0, sizeof(skb->cb));
- 
+
 +#ifdef CPTCFG_MAC80211_NSS_SUPPORT
 +		if (sdata->nssctx) {
 +			netif_rx_nss(skb, sdata);
@@ -205,27 +205,26 @@
 +
  		/* deliver to local stack */
  		if (rx->list)
- 			list_add_tail(&skb->list, rx->list);
-@@ -4283,6 +4290,7 @@ static bool ieee80211_invoke_fast_rx(struct ieee80211_rx_data *rx,
+ #if LINUX_VERSION_IS_GEQ(4,19,0)
+@@ -4306,6 +4306,7 @@ static void ieee80211_rx_8023(struct iee
  {
- 	struct sk_buff *skb = rx->skb;
- 	struct ieee80211_hdr *hdr = (void *)skb->data;
+ 	struct ieee80211_sta_rx_stats *stats;
+ 	struct ieee80211_rx_status *status = IEEE80211_SKB_RXCB(rx->skb);
 +	struct ieee80211_sub_if_data *sdata = rx->sdata;
- 	struct ieee80211_rx_status *status = IEEE80211_SKB_RXCB(skb);
  	struct sta_info *sta = rx->sta;
- 	int orig_len = skb->len;
-@@ -4469,6 +4477,14 @@ static bool ieee80211_invoke_fast_rx(struct ieee80211_rx_data *rx,
+ 	struct sk_buff *skb = rx->skb;
+ 	void *sa = skb->data + ETH_ALEN;
+@@ -4377,6 +4391,13 @@ static void ieee80211_rx_8023(struct iee
  	/* deliver to local stack */
  	skb->protocol = eth_type_trans(skb, fast_rx->dev);
  	memset(skb->cb, 0, sizeof(skb->cb));
-+
 +#ifdef CPTCFG_MAC80211_NSS_SUPPORT
-+	if (sdata->nssctx) {
-+		netif_rx_nss(skb, sdata);
-+		return true;
-+	}
++       if (sdata->nssctx) {
++               netif_rx_nss(skb, sdata);
++               return;
++       }
 +#endif
 +
  	if (rx->list)
+ #if LINUX_VERSION_IS_GEQ(4,19,0)
  		list_add_tail(&skb->list, rx->list);
- 	else

@@ -39,24 +39,24 @@
  	status = ath10k_core_probe_fw(ar);
  	if (status) {
  		ath10k_err(ar, "could not probe fw (%d)\n", status);
---- a/drivers/net/wireless/ath/ath10k/core.h
-+++ b/drivers/net/wireless/ath/ath10k/core.h
-@@ -119,6 +119,7 @@ enum ath10k_skb_flags {
+--- a/drivers/net/wireless/ath/ath10k/core.h	2021-02-14 19:40:43.000000000 +0000
++++ b/drivers/net/wireless/ath/ath10k/core.h	2021-02-22 13:43:32.226215520 +0000
+@@ -111,6 +111,7 @@ enum ath10k_skb_flags {
  	ATH10K_SKB_F_MGMT = BIT(3),
  	ATH10K_SKB_F_QOS = BIT(4),
  	ATH10K_SKB_F_RAW_TX = BIT(5),
 +	ATH10K_SKB_F_NO_80211_ENCAP = BIT(6),
+ 	ATH10K_SKB_F_NOACK_TID = BIT(6),
  };
- 
- struct ath10k_skb_cb {
-@@ -1581,6 +1582,8 @@ struct ath10k {
- 	const char *led_default_trigger;
- #endif
- 
+
+@@ -1282,6 +1283,8 @@ struct ath10k {
+ 	bool coex_support;
+ 	int coex_gpio_pin;
+
 +	bool ethernet_mode;
 +
  	/* must be last */
- 	u8 drv_priv[0] __aligned(sizeof(void *));
+ 	u8 drv_priv[] __aligned(sizeof(void *));
  };
 --- a/drivers/net/wireless/ath/ath10k/htt_tx.c
 +++ b/drivers/net/wireless/ath/ath10k/htt_tx.c
